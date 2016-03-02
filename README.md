@@ -7,20 +7,23 @@ I have use Sadun's vcf tools but not compatible in iOS9.0 or later.So i rewrite 
 
 #### How to use
 **Generate VCard String**
-Just add VCGGenerator class files to the project and use method("+ (NSString *)generateVCardStringWithRecID:(NSString *)contactIdString") which would return the VCard String.  
+Just add VCGGenerator class files to the project and use method:
+```Objective-C
++ (NSString *)generateVCardStringWithRecID:(NSString *)contactIdString")
+```
+which would return the VCard String.  
 
 **Write VCardString**
 
 ```Objective-C
-self.addressBook.loadContacts(
-    { (contacts: [APContact]?, error: NSError?) in
-        if let uwrappedContacts = contacts {
-            // do something with contacts
-        }
-        else if let unwrappedError = error {
-            // show error
-        }
-    })
+//It's better that you save the contactId in NSUserDefaults or others.
+CNContactStore *stroe = [[CNContactStore alloc]init];
+id keysToFetch = @[[CNContactViewController descriptorForRequiredKeys]];
+CNContact *contact = [stroe unifiedContactWithIdentifier:contactID keysToFetch:keysToFetch error:nil];
+NSString *vcard = [VCFGenerator generateVCardStringWithContactID:contactIdString];
+//Then you just need to write the result to the new xxxxx.vcf file.
+[vcard writeToFile:[NSHomeDirectory() stringByAppendingFormat:@"/tmp"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+
 ```
 #### Availability
 iOS (9.0 and later)
