@@ -3,7 +3,7 @@
 vCard is a file format standard for electronic business cards. vCards are often attached to e-mail messages, but can be exchanged in other ways, such as on the World Wide Web or instant messaging. They can contain name and address information, telephone numbers, e-mail addresses, URLs, logos, photographs, and audio clips.
 
 #### History
-I have use Sadun's vcf tools but not compatible in iOS9.0 or later.So i rewrite the new one base on it.You can find the Sadun's code [here](http://ericasadun.com).
+I have used Sadun's vcf tools but not compatible in iOS9.0 or later.So I rewrited the new one base on it.You can find the Sadun's code [here](http://ericasadun.com).
 
 #### How to use
 **Generate VCard String**
@@ -16,7 +16,7 @@ which would return the VCard String.
 **Write VCardString**
 
 ```Objective-C
-//It's better that you save the contactId in NSUserDefaults or others.
+//It will be better that you save the contactId in NSUserDefaults or others.
 CNContactStore *stroe = [[CNContactStore alloc]init];
 id keysToFetch = @[[CNContactViewController descriptorForRequiredKeys]];
 CNContact *contact = [stroe unifiedContactWithIdentifier:contactID keysToFetch:keysToFetch error:nil];
@@ -30,7 +30,7 @@ iOS (9.0 and later)
 
 #### Contributor guide
 
-Thanks for Erica Sadun, http://ericasadun.com
+Thanks for Erica Sadun, [about him](http://ericasadun.com)
 Copyright (c) 2010 Altosh
 
 #### License
