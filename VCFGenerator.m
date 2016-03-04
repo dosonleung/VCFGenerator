@@ -85,13 +85,23 @@ static NSInteger itemCounter;
         }
     }
     
-    // Photo
+    // CNContactThumbnailImageDataKey
     if ([contact isKeyAvailable:CNContactThumbnailImageDataKey]){
         NSData *imageData = contact.thumbnailImageData;//contact.imageData;
         if (imageData)
         {
             vcard = [vcard stringByAppendingFormat:@"PHOTO;BASE64:%@\n",[imageData base64Encoding]];
         }
+    }
+    
+    // CNContactRelationsKey
+    if ([contact isKeyAvailable:CNContactRelationsKey]) {
+        vcard = [vcard stringByAppendingString:[VCFGenerator toVcardField:@"relation" items:contact.contactRelations]];
+    }
+    
+    // CNContactSocialProfilesKey
+    if ([contact isKeyAvailable:CNContactSocialProfilesKey]) {
+        vcard = [vcard stringByAppendingString:[VCFGenerator toVcardField:@"socialprofile" items:contact.socialProfiles]];
     }
     
     // end
@@ -119,6 +129,8 @@ static NSInteger itemCounter;
             else if ([type isEqualToString:@"address"]) vcard = [vcard stringByAppendingString:[VCFGenerator addressToVcardField:[items objectAtIndex:i]]];
             else if ([type isEqualToString:@"url"]) vcard = [vcard stringByAppendingString:[VCFGenerator urlToVcardField:[items objectAtIndex:i]]];
             else if ([type isEqualToString:@"im"]) vcard = [vcard stringByAppendingString:[VCFGenerator imToVcardField:[items objectAtIndex:i]]];
+            else if ([type isEqualToString:@"relation"]) vcard = [vcard stringByAppendingString:[VCFGenerator relationsToVcardField:[items objectAtIndex:i]]];
+            else if([type isEqualToString:@"socialprofile"]) vcard = [vcard stringByAppendingString:[VCFGenerator socialProfileToVcardField:[items objectAtIndex:i]]];
         }
     }
     return vcard;
@@ -254,6 +266,62 @@ static NSInteger itemCounter;
         [VCFGenerator setItemCounter:counter];
     }
     
+    return vcard;
+}
+
++ (NSString *)socialProfileToVcardField:(CNLabeledValue<CNSocialProfile*>*)socialProfileValue
+{
+    /*
+     X-SOCIALPROFILE;type=sinaweibo:http://weibo.com/n/429341159@qq.com
+     X-SOCIALPROFILE;type=Wechat;x-user=150175abc:x-apple:15017539545
+     X-SOCIALPROFILE;type=twitter:http://twitter.com/dosonleung@gmail.com
+     X-SOCIALPROFILE;type=facebook:http://www.facebook.com/dosonleung
+     */
+    
+    NSString *labelLower = [socialProfileValue.label lowercaseString];
+    NSString *vcard = @"";
+    CNSocialProfile *socialProfile = socialProfileValue.value;
+    if ([labelLower isEqualToString:@"sinaweibo"]) vcard = [NSString stringWithFormat:@"X-SOCIALPROFILE;type=sinaweibo:%@\n",socialProfile.urlString];
+    else if ([labelLower isEqualToString:@"twitter"]) vcard = [NSString stringWithFormat:@"X-SOCIALPROFILE;type=twitter:%@\n",socialProfile.urlString];
+    else if ([labelLower isEqualToString:@"facebook"]) vcard = [NSString stringWithFormat:@"X-SOCIALPROFILE;type=facebook:%@\n",socialProfile.urlString];
+    else if ([labelLower isEqualToString:@"flickr"]) vcard = [NSString stringWithFormat:@"X-SOCIALPROFILE;type=flickr:%@\n",socialProfile.urlString];
+    else if ([labelLower isEqualToString:@"linkedin"]) vcard = [NSString stringWithFormat:@"X-SOCIALPROFILE;type=linkedin:%@\n",socialProfile.urlString];
+    else if ([labelLower isEqualToString:@"myspace"]) vcard = [NSString stringWithFormat:@"X-SOCIALPROFILE;type=myspace:%@\n",socialProfile.urlString];
+    else
+    {
+        NSInteger counter = [VCFGenerator itemCounter]+1;
+        vcard = [NSString stringWithFormat:@"X-SOCIALPROFILE;type=%@;x-user=%@:%@\n",socialProfile.service,socialProfile.username,socialProfile.urlString];
+        [VCFGenerator setItemCounter:counter];
+    }
+    
+    return vcard;
+}
+
++ (NSString *)relationsToVcardField:(CNLabeledValue<CNContactRelation*>*)relationValue
+{
+    NSString *labelLower = [relationValue.label lowercaseString];
+    NSString *vcard = @"";
+    NSInteger counter = [VCFGenerator itemCounter]+1;
+    CNContactRelation *cnContactRelation = relationValue.value;
+    //item2.X-ABRELATEDNAMES;type=pref:Alice
+    //item2.X-ABLabel:_$!<Mother>!$_
+    if ([labelLower isEqualToString:@"_$!<mother>!$_"]) vcard = [NSString stringWithFormat:@"item%ld.X-ABRELATEDNAMES;type=pref:%@\nitem%ld.X-ABLabel:%@\n",counter,cnContactRelation.name,counter,@"_$!<Mother>!$_"];
+    else if ([labelLower isEqualToString:@"_$!<father>!$_"]) vcard = [NSString stringWithFormat:@"item%ld.X-ABRELATEDNAMES;type=pref:%@\nitem%ld.X-ABLabel:%@\n",counter,cnContactRelation.name,counter,@"_$!<Father>!$_"];
+    else if ([labelLower isEqualToString:@"_$!<parent>!$_"]) vcard = [NSString stringWithFormat:@"item%ld.X-ABRELATEDNAMES;type=pref:%@\nitem%ld.X-ABLabel:%@\n",counter,cnContactRelation.name,counter,@"_$!<Parent>!$_"];
+    else if ([labelLower isEqualToString:@"_$!<brother>!$_"]) vcard = [NSString stringWithFormat:@"item%ld.X-ABRELATEDNAMES;type=pref:%@\nitem%ld.X-ABLabel:%@\n",counter,cnContactRelation.name,counter,@"_$!<Brother>!$_"];
+    else if ([labelLower isEqualToString:@"_$!<sister>!$_"]) vcard = [NSString stringWithFormat:@"item%ld.X-ABRELATEDNAMES;type=pref:%@\nitem%ld.X-ABLabel:%@\n",counter,cnContactRelation.name,counter,@"_$!<Sister>!$_"];
+    else if ([labelLower isEqualToString:@"_$!<child>!$_"]) vcard = [NSString stringWithFormat:@"item%ld.X-ABRELATEDNAMES;type=pref:%@\nitem%ld.X-ABLabel:%@\n",counter,cnContactRelation.name,counter,@"_$!<Child>!$_"];
+    else if ([labelLower isEqualToString:@"_$!<friend>!$_"]) vcard = [NSString stringWithFormat:@"item%ld.X-ABRELATEDNAMES;type=pref:%@\nitem%ld.X-ABLabel:%@\n",counter,cnContactRelation.name,counter,@"_$!<Friend>!$_"];
+    else if ([labelLower isEqualToString:@"_$!<spouse>!$_"]) vcard = [NSString stringWithFormat:@"item%ld.X-ABRELATEDNAMES;type=pref:%@\nitem%ld.X-ABLabel:%@\n",counter,cnContactRelation.name,counter,@"_$!<Spouse>!$_"];
+    else if ([labelLower isEqualToString:@"_$!<partner>!$_"]) vcard = [NSString stringWithFormat:@"item%ld.X-ABRELATEDNAMES;type=pref:%@\nitem%ld.X-ABLabel:%@\n",counter,cnContactRelation.name,counter,@"_$!<Partner>!$_"];
+    else if ([labelLower isEqualToString:@"_$!<assistant>!$_"]) vcard = [NSString stringWithFormat:@"item%ld.X-ABRELATEDNAMES;type=pref:%@\nitem%ld.X-ABLabel:%@\n",counter,cnContactRelation.name,counter,@"_$!<Assistant>!$_"];
+    else if ([labelLower isEqualToString:@"_$!<manager>!$_"]) vcard = [NSString stringWithFormat:@"item%ld.X-ABRELATEDNAMES;type=pref:%@\nitem%ld.X-ABLabel:%@\n",counter,cnContactRelation.name,counter,@"_$!<Manager>!$_"];
+    else if ([labelLower isEqualToString:@"_$!<other>!$_"]) vcard = [NSString stringWithFormat:@"item%ld.X-ABRELATEDNAMES;type=pref:%@\nitem%ld.X-ABLabel:%@\n",counter,cnContactRelation.name,counter,@"_$!<Other>!$_"];
+    else
+    {
+        vcard = [NSString stringWithFormat:@"item%ld.X-ABRELATEDNAMES:%@\nitem%ld.X-ABLabel:%@\n",counter,cnContactRelation.name,counter,relationValue.label];
+    }
+    [VCFGenerator setItemCounter:counter];
     return vcard;
 }
 
