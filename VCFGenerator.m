@@ -54,23 +54,23 @@ static NSInteger itemCounter;
     if([contact isKeyAvailable:@"jobTitle"]) vcard = [vcard stringByAppendingFormat:@"TITLE:%@\n",contact.jobTitle];
     // Mail
     if ([contact isKeyAvailable:CNContactEmailAddressesKey])
-    vcard = [vcard stringByAppendingString:[VCFGenerator toVcardField:@"email" items:contact.emailAddresses]];
+        vcard = [vcard stringByAppendingString:[VCFGenerator toVcardField:@"email" items:contact.emailAddresses]];
     
     // Tel
     if ([contact isKeyAvailable:CNContactPhoneNumbersKey])
-    vcard = [vcard stringByAppendingString:[VCFGenerator toVcardField:@"phone" items:contact.phoneNumbers]];
+        vcard = [vcard stringByAppendingString:[VCFGenerator toVcardField:@"phone" items:contact.phoneNumbers]];
     
     // Adress
     if ([contact isKeyAvailable:CNContactPostalAddressesKey])
-    vcard = [vcard stringByAppendingString:[VCFGenerator toVcardField:@"address" items:contact.postalAddresses]];
+        vcard = [vcard stringByAppendingString:[VCFGenerator toVcardField:@"address" items:contact.postalAddresses]];
     
     // url
     if ([contact isKeyAvailable:CNContactUrlAddressesKey])
-    vcard = [vcard stringByAppendingString:[VCFGenerator toVcardField:@"url" items:contact.urlAddresses]];
+        vcard = [vcard stringByAppendingString:[VCFGenerator toVcardField:@"url" items:contact.urlAddresses]];
     
     // IM
     if ([contact isKeyAvailable:CNContactInstantMessageAddressesKey])
-    vcard = [vcard stringByAppendingString:[VCFGenerator toVcardField:@"im" items:contact.instantMessageAddresses]];
+        vcard = [vcard stringByAppendingString:[VCFGenerator toVcardField:@"im" items:contact.instantMessageAddresses]];
     
     // birthday
     if ([contact isKeyAvailable:CNContactBirthdayKey]){
@@ -129,12 +129,12 @@ static NSInteger itemCounter;
     NSString *labelLower = [email.label lowercaseString];
     NSString *vcard = @"";
     
-    if ([labelLower isEqualToString:@"_$!<home>!$_"]) vcard = [NSString stringWithFormat:@"EMAIL;type=INTERNET;type=HOME:%@\n",email.label];
-    else if ([labelLower isEqualToString:@"_$!<work>!$_"]) vcard = [NSString stringWithFormat:@"EMAIL;type=INTERNET;type=WORK:%@\n",email.label];
+    if ([labelLower isEqualToString:@"_$!<home>!$_"]) vcard = [NSString stringWithFormat:@"EMAIL;type=INTERNET;type=HOME:%@\n",email.value];
+    else if ([labelLower isEqualToString:@"_$!<work>!$_"]) vcard = [NSString stringWithFormat:@"EMAIL;type=INTERNET;type=WORK:%@\n",email.value];
     else
     {
         NSInteger counter = [VCFGenerator itemCounter]+1;
-        vcard = [NSString stringWithFormat:@"item%ld.EMAIL;type=INTERNET:%@\nitem%ld.X-ABLabel:%@\n",(long)counter,email.label,(long)counter,email.label];
+        vcard = [NSString stringWithFormat:@"item%ld.EMAIL;type=INTERNET:%@\nitem%ld.X-ABLabel:%@\n",(long)counter,email.value,(long)counter,email.label];
         [VCFGenerator setItemCounter:counter];
     }
     return vcard;
@@ -147,18 +147,18 @@ static NSInteger itemCounter;
     NSString *labelLower = [phone.label lowercaseString];
     NSString *vcard = @"";
     
-    if ([labelLower isEqualToString:@"_$!<mobile>!$_"]) vcard = [NSString stringWithFormat:@"TEL;type=CELL:%@\n",phone.label];
-    else if ([labelLower isEqualToString:@"iphone"]) vcard = [NSString stringWithFormat:@"TEL;type=IPHONE:%@\n",phone.label];
-    else if ([labelLower isEqualToString:@"_$!<home>!$_"]) vcard = [NSString stringWithFormat:@"TEL;type=HOME:%@\n",phone.label];
-    else if ([labelLower isEqualToString:@"_$!<work>!$_"]) vcard = [NSString stringWithFormat:@"TEL;type=WORK:%@\n",phone.label];
-    else if ([labelLower isEqualToString:@"_$!<main>!$_"]) vcard = [NSString stringWithFormat:@"TEL;type=MAIN:%@\n",phone.label];
-    else if ([labelLower isEqualToString:@"_$!<homefax>!$_"]) vcard = [NSString stringWithFormat:@"TEL;type=HOME;type=FAX:%@\n",phone.label];
-    else if ([labelLower isEqualToString:@"_$!<workfax>!$_"]) vcard = [NSString stringWithFormat:@"TEL;type=WORK;type=FAX:%@\n",phone.label];
-    else if ([labelLower isEqualToString:@"_$!<pager>!$_"]) vcard = [NSString stringWithFormat:@"TEL;type=PAGER:%@\n",phone.label];
+    if ([labelLower isEqualToString:@"_$!<mobile>!$_"]) vcard = [NSString stringWithFormat:@"TEL;type=CELL:%@\n",phone.value.stringValue];
+    else if ([labelLower isEqualToString:@"iphone"]) vcard = [NSString stringWithFormat:@"TEL;type=IPHONE:%@\n",phone.value.stringValue];
+    else if ([labelLower isEqualToString:@"_$!<home>!$_"]) vcard = [NSString stringWithFormat:@"TEL;type=HOME:%@\n",phone.value.stringValue];
+    else if ([labelLower isEqualToString:@"_$!<work>!$_"]) vcard = [NSString stringWithFormat:@"TEL;type=WORK:%@\n",phone.value.stringValue];
+    else if ([labelLower isEqualToString:@"_$!<main>!$_"]) vcard = [NSString stringWithFormat:@"TEL;type=MAIN:%@\n",phone.value.stringValue];
+    else if ([labelLower isEqualToString:@"_$!<homefax>!$_"]) vcard = [NSString stringWithFormat:@"TEL;type=HOME;type=FAX:%@\n",phone.value.stringValue];
+    else if ([labelLower isEqualToString:@"_$!<workfax>!$_"]) vcard = [NSString stringWithFormat:@"TEL;type=WORK;type=FAX:%@\n",phone.value.stringValue];
+    else if ([labelLower isEqualToString:@"_$!<pager>!$_"]) vcard = [NSString stringWithFormat:@"TEL;type=PAGER:%@\n",phone.value.stringValue];
     else
     {
         NSInteger counter = [VCFGenerator itemCounter]+1;
-        vcard = [NSString stringWithFormat:@"item%ld.TEL:%@\nitem%ld.X-ABLabel:%@\n",(long)counter,phone.label,(long)counter,phone.label];
+        vcard = [NSString stringWithFormat:@"item%ld.TEL:%@\nitem%ld.X-ABLabel:%@\n",(long)counter,phone.value.stringValue,(long)counter,phone.value.stringValue];
         [VCFGenerator setItemCounter:counter];
     }
     
@@ -221,12 +221,12 @@ static NSInteger itemCounter;
     NSString *labelLower = [url.label lowercaseString];
     NSString *vcard = @"";
     
-    if ([labelLower isEqualToString:@"_$!<home>!$_"]) vcard = [NSString stringWithFormat:@"URL;type=HOME:%@\n",url.label];
-    else if ([labelLower isEqualToString:@"_$!<work>!$_"]) vcard = [NSString stringWithFormat:@"URL;type=WORK:%@\n",url.label];
+    if ([labelLower isEqualToString:@"_$!<home>!$_"]) vcard = [NSString stringWithFormat:@"URL;type=HOME:%@\n",url.value];
+    else if ([labelLower isEqualToString:@"_$!<work>!$_"]) vcard = [NSString stringWithFormat:@"URL;type=WORK:%@\n",url.value];
     else
     {
         NSInteger counter = [VCFGenerator itemCounter]+1;
-        vcard = [NSString stringWithFormat:@"item%ld.URL:%@\nitem%ld.X-ABLabel:%@\n",(long)counter,url.label,(long)counter,url.label];
+        vcard = [NSString stringWithFormat:@"item%ld.URL:%@\nitem%ld.X-ABLabel:%@\n",(long)counter,url.value,(long)counter,url.label];
         [VCFGenerator setItemCounter:counter];
     }
     
